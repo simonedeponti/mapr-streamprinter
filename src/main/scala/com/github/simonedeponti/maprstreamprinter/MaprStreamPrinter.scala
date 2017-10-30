@@ -24,7 +24,7 @@ object MaprStreamPrinter {
 
   def main(args: Array[String]): Unit = {
     val consumer = makeConsumer(args.head.split(",").toSeq)
-    val offset: Option[(TopicPartition, Long)] = if (args.length > 1) {
+    val offset: Option[(TopicPartition, Long)] = if (args.length > 2) {
       var offset_components = args(1).split(":")
       Some((new TopicPartition(offset_components.head, offset_components(1).toInt), offset_components.last.toLong))
     }
