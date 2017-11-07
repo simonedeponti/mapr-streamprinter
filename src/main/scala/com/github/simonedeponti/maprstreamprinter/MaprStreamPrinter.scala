@@ -13,18 +13,13 @@ object MaprStreamPrinter {
   def makeConsumer(topics: Seq[String], withOffset: Boolean): KafkaConsumer[String, String] = {
     val props: Properties = new Properties()
     props.setProperty("group.id", "maprstream-printer")
-    if(withOffset) {
-      props.setProperty("enable.auto.commit", "false")
-    }
-    else {
-      props.setProperty("enable.auto.commit", "true")
-      props.setProperty("auto.offset.reset", "earliest")
-    }
+    props.setProperty("enable.auto.commit", "false")
+    props.setProperty("auto.offset.reset", "earliest")
     props.setProperty("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer")
     props.setProperty("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer")
     val consumer = new KafkaConsumer[String, String](props)
     consumer.subscribe(topics.asJava)
-    println(s"Subscribing to $topics")
+    println(s"### Subscribing to $topics\n\n")
     consumer
   }
 
@@ -51,7 +46,7 @@ object MaprStreamPrinter {
         if(iterator.hasNext) {
           while(iterator.hasNext) {
             val record: ConsumerRecord[String, String] = iterator.next()
-            println(s"  Got record: $record")
+            println(s"\n### Got record\n\n$record")
           }
         }
         else {
@@ -61,7 +56,7 @@ object MaprStreamPrinter {
     }
     finally {
       consumer.close()
-      println("Consumer shut down")
+      println("### Consumer shut down")
     }
   }
 }
