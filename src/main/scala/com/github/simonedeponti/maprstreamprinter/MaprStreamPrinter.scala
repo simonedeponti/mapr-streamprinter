@@ -10,10 +10,16 @@ import scala.collection.JavaConverters._
 
 object MaprStreamPrinter {
 
-  def makeConsumer(topics: Seq[String]): KafkaConsumer[String, String] = {
+  def makeConsumer(topics: Seq[String], withOffset: Boolean): KafkaConsumer[String, String] = {
     val props: Properties = new Properties()
     props.setProperty("group.id", "maprstream-printer")
-    props.setProperty("enable.auto.commit", "false")
+    if(withOffset) {
+      props.setProperty("enable.auto.commit", "false")
+    }
+    else {
+      props.setProperty("enable.auto.commit", "true")
+      props.setProperty("auto.offset.reset", "earliest")
+    }
     props.setProperty("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer")
     props.setProperty("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer")
     val consumer = new KafkaConsumer[String, String](props)
@@ -23,7 +29,6 @@ object MaprStreamPrinter {
   }
 
   def main(args: Array[String]): Unit = {
-    val consumer = makeConsumer(args.head.split(",").toSeq)
     val offset: Option[(TopicPartition, Long)] = if (args.length > 2) {
       var offset_components = args(1).split(":")
       Some((new TopicPartition(offset_components.head, offset_components(1).toInt), offset_components.last.toLong))
@@ -31,6 +36,7 @@ object MaprStreamPrinter {
     else {
       None
     }
+    val consumer = makeConsumer(args.head.split(",").toSeq, offset.isDefined)
     val timeout = args.last.toInt * 1000
 
     try {
