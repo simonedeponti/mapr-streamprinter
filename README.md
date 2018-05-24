@@ -10,5 +10,6 @@ Launch `sbt assembly`
 
 Run:
 ```sh
+$ maprlogin password
 $ java -cp "$(mapr classpath):mapr-streamprinter-assembly-0.1.jar" com.github.simonedeponti.maprstreamprinter.MaprStreamPrinter /path/to/stream:topic 1
 ```
